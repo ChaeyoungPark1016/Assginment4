@@ -9,8 +9,6 @@ import Pagination from 'react-bootstrap/Pagination';
 import Card from 'react-bootstrap/Card';
 import ArtworkCard from '@/components/ArtworkCard';
 
-import validObjectIDList from '@/public/data/validObjectIDList.json';
-
 function Artwork() {
   const PER_PAGE = 12;
   const router = useRouter();
@@ -22,19 +20,15 @@ function Artwork() {
 
   useEffect(() => {
     if (data) {
-
-      let filteredResults = validObjectIDList.objectIDs.filter(x => data.objectIDs?.includes(x));
       const results = [];
-
-      for (let i = 0; i < filteredResults.length; i += PER_PAGE) {
-        const chunk = filteredResults.slice(i, i + PER_PAGE);
+      for (let i = 0; i < data?.objectIDs?.length; i += PER_PAGE) {
+        const chunk = data?.objectIDs.slice(i, i + PER_PAGE);
         results.push(chunk);
-    }            
-    setArtworkList(results);
-    setPage(1);
-}
-}, [data]);
-
+      }
+      setArtworkList(results);
+      setPage(1);
+    }
+  }, [data]);
 
   if (error) {
     return <Error statusCode={404} />;
@@ -91,3 +85,4 @@ function Artwork() {
 };
 
 export default Artwork;
+
