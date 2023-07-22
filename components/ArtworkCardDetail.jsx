@@ -1,60 +1,69 @@
-import React, { useState } from "react";
+import React from "react";
 import useSWR from "swr";
+import {Card, Button} from "react-bootstrap";
+import Link from "next/link";
 import Error from "next/error";
+import { useRouter } from "next/router";
 
-import { Card, Button } from "react-bootstrap";
-import { useAtom } from "jotai";
-import { favouritesAtom } from "@/store:";
 
-function ArtworkCardDetail({ objectID }) {
-  const [favourites, setFavourites] = useAtom(favouritesAtom);
-  const [showAdded, setShowAdded] = useState(favourites.includes(objectID) ? true : false);
-
-  const { data, error } = useSWR(objectID ? `https://collectionapi.metmuseum.org/public/collection/v1/objects/${objectID}` : null);
-
-  const favouritesClicked = () => {
-    if (showAdded) {
-      setFavourites(favourites => favourites.filter(fav => fav !== objectID));
-      setShowAdded(false);
-    } else {
-      setFavourites(favourites => [...favourites, objectID]);
-      setShowAdded(true);
+function ArtworkCard({ objectID }) {
+    const { data, error } = useSWR(
+      `https://collectionapi.metmuseum.org/public/collection/v1/objects/${objectID}`
+    );
+    const router = useRouter();
+  
+    const handleButtonClick = () => {
+      console.log("Button clicked for objectID:", objectID);
+      router.push(`/artwork/${objectID}`);
+    };
+  
+    if (error) {
+      return <Error />;
     }
-  };
-
-  if (error) {
-    return <Error statusCode={404} />;
-  } else {
-    if (!data || data.length === 0) {
+  
+    if (!data) {
       return null;
-    } else {
-      return (
-        <Card className="hero-card" style={{ width: "18rem" }}>
-          {data.primaryImageSmall && <Card.Img variant="top" src={data.primaryImage} />}
-          <Card.Body>
-            {data.title ? (
-              <Card.Title className="card-title">{data.title}</Card.Title>
-            ) : (
-              <Card.Title>N/A</Card.Title>
-            )}
-            <Card.Text>
-              {data.objectDate ? <p><strong>Date:</strong> {data.objectDate}</p> : <p><strong>Date:</strong> N/A</p>}
-              {data.classification ? <p><strong>Classification:</strong> {data.classification}</p> : <p><strong>Classification:</strong> N/A</p>}
-              {data.medium ? <p><strong>Medium:</strong> {data.medium}</p> : <p><strong>Medium:</strong> N/A</p>}
-              <br />
-              <br />
-              {data.artistDisplayName ? <p><strong>Artist:</strong> {data.artistDisplayName}</p> : <p><strong>Artist:</strong> N/A</p>}
-              {data.creditLine ? <p><strong>Credit Line:</strong> {data.creditLine}</p> : <p><strong>Credit Line:</strong> N/A</p>}
-              {data.dimensions ? <p><strong>Dimensions:</strong> {data.dimensions}</p> : <p><strong>Dimensions:</strong> N/A</p>}
-            </Card.Text>
-            <Button variant={showAdded ? "primary" : "outline-primary"} onClick={favouritesClicked}>
-              {showAdded ? "+ Favourite (added)" : "+ Favourite"}
-            </Button>
-          </Card.Body>
-        </Card>
-      );
     }
+  
+    const {primaryImageSmall,title,objectDate,classification,medium,} = data;
+  
+    return (
+      <Card className="hero-card" style={{ width: "18rem" }}>
+        {primaryImageSmall ? ( 
+          <Card.Img
+            className="card-image"
+            variant="top"
+            src={primaryImageSmall}
+            style={{ width: "100%", height: "auto" }}
+          />
+        ) : (
+          <Card.Img
+            className="card-image"
+            variant="top"
+            src="https://via.placeholder.com/375x375.png?text=[+Not+Available+]"
+            style={{ width: "100%", height: "auto" }}
+          />
+        )}
+        <Card.Body>
+          <Card.Title className="card-title">{title || "N/A"}</Card.Title>
+          <Card.Text>
+            {objectDate && (
+              <p><strong>Date:</strong> {objectDate}</p>
+            )}
+            {classification && (
+              <p><strong>Classification:</strong> {classification}</p>
+            )}
+            {medium && (
+              <p><strong>Medium:</strong> {medium}</p>
+            )}
+          </Card.Text>
+          <Link passHref href={`/artwork/${objectID}`}>
+            <Button variant="dark" onClick={handleButtonClick}><strong>ID:</strong> {objectID}
+            </Button>
+          </Link>
+        </Card.Body>
+      </Card>
+    );
   }
-}
 
-export default ArtworkCardDetail;
+  export default ArtworkCard;
