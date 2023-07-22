@@ -4,9 +4,9 @@
  *  No part of this assignment has been copied manually or electronically from any other source
  *  (including web sites) or distributed to other students.
  *
- *  Name: Chaeyoung Park  Student ID: 011784154    Date: July 21, 2023
- *  Deploy Link:
- ********************************************************************************/
+ *  Name: Chaeyoung Park  Student ID: 011784154    Date: Jul 5, 2023
+ *  Deploy Link: https://animated-muffin-5f0066.netlify.app/
+/*********************************************************************************/
 
 import React from "react";
 
